@@ -34,4 +34,17 @@ export interface Role {
     name: string;
 }
 
+export interface RoleResponse {
+    success: boolean;
+    message: string;
+    data:    Role[];
+}
+
+export interface Role {
+    id:        string;
+    name:      string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
 
