@@ -1,7 +1,8 @@
-import { Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, inject, signal, } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login-page',
@@ -17,8 +18,15 @@ export class LoginPageComponent {
   type = 'password';
   icon = 'bi bi-eye';
 
+  ngOnInit() {
+    const rememberedEmail = localStorage.getItem('rememberedEmail');
+    if (rememberedEmail) {
+      this.loginForm.patchValue({ email: rememberedEmail, rememberMe: true });
+    }
+  }
+
   showPassword(type: string) {
-    if(type === 'password'){
+    if(type === 'password') {
       this.type = 'text';
       this.icon = 'bi bi-eye-slash';
     } else {
@@ -28,30 +36,46 @@ export class LoginPageComponent {
   }
 
   loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+    rememberMe: [false]
   });
-  
-  onSubmit() {
-    if(this.loginForm.invalid){
+
+  onsubmit() {
+    if (this.loginForm.invalid) {
       this.hasError.set(true);
       setTimeout(() => {
         this.hasError.set(false);
       }, 2000);
       return;
     }
-    const { email = '', password = '' } = this.loginForm.value;
-    this.authService.login(email!, password!).subscribe((isAuthenticated)=> {
+    const {email = '', password = '',rememberMe} = this.loginForm.value;
+
+    if (rememberMe) {
+      localStorage.setItem('rememberedEmail', email!);
+    }else{
+      localStorage.removeItem('rememberedEmail');
+    }
+
+
+    this.authService.login(email!, password!).subscribe((isAuthenticated) => {
+
       if(isAuthenticated){
-        alert('logueado')
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Bienvenido compatriota!",
+          showConfirmButton: false,
+          timer: 1500
+        });
         this.router.navigateByUrl('/dashboard');
-        return
+        return;
       }
       this.hasError.set(true);
       setTimeout(() => {
         this.hasError.set(false);
       }, 2000);
       return;
-    })
+    });
   }
 }

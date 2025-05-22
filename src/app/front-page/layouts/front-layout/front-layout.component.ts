@@ -5,7 +5,7 @@ import { FooterFrontComponent } from '../../components/footer-front/footer-front
 
 @Component({
   selector: 'app-front-layout',
-  imports: [RouterOutlet, HeaderFrontComponent, FooterFrontComponent],
+  imports: [RouterOutlet,HeaderFrontComponent,FooterFrontComponent],
   templateUrl: './front-layout.component.html',
   styleUrl: './front-layout.component.css'
 })

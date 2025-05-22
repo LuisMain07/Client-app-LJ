@@ -1,26 +1,31 @@
-import { Routes } from "@angular/router";
+import { Routes } from "@angular/router"
 import { DashboardLayoutComponent } from "./layout/dashboard-layout/dashboard-layout.component";
+import { UsersPageComponent } from "./pages/users-page/users-page.component";
 import { UserPageComponent } from "./pages/user-page/user-page.component";
 
-const dashboardRoutes: Routes = [
+const dashboardRoutes:Routes =[
     {
-        path:'',
+        path: '',
         component: DashboardLayoutComponent,
         children:[
             {
-                path:'users',
-                component: UserPageComponent
+                path: 'users',
+                component: UsersPageComponent,
             },
             {
-                path:'**',
-                redirectTo:''
+                path: 'users/:id',
+                component: UserPageComponent,
+            },
+            {
+                path: '**',
+                redirectTo: 'users',
             },
         ],
     },
     {
-        path:'**',
-        redirectTo:''
-    },
+        path: '**',
+        redirectTo: '',
+    }
 ];
-
+        
 export default dashboardRoutes;
