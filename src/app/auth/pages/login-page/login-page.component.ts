@@ -64,7 +64,7 @@ export class LoginPageComponent {
         Swal.fire({
           position: "center",
           icon: "success",
-          title: "Bienvenido compatriota!",
+          title: "Logueado!",
           showConfirmButton: false,
           timer: 1500
         });

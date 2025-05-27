@@ -5,17 +5,21 @@ import { Router } from '@angular/router';
 import { UserService } from '../../../../users/services/user.service';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { UserImagePipe } from '../../../../users/pipes/user-image.pipe';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'user-detail',
   imports: [ReactiveFormsModule, UserImagePipe],
   templateUrl: './user-detail.component.html',
-  styleUrl: './user-detail.component.css'
+  styleUrl: './user-detail.component.css',
 })
 export class UserDetailComponent {
   user = input.required<User>();
   router = inject(Router);
-  fb=inject(FormBuilder);
+  fb = inject(FormBuilder);
+  previewIMG = false;
+  previewURL: string | null = null;
+  avatarFile: File | null = null;
 
   UserService = inject(UserService);
 
@@ -24,7 +28,8 @@ export class UserDetailComponent {
     last_name: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
     telephone: ['', Validators.required],
-    rol_id: ['', Validators.required],
+    role_id: ['', Validators.required],
+    password: [''],
     avatar: [''],
   });
 
@@ -34,9 +39,12 @@ export class UserDetailComponent {
       last_name: this.user().last_name,
       email: this.user().email,
       telephone: this.user().telephone,
-      rol_id: this.user().Role.id,
+      role_id: this.user().Role?.id ?? this.user().role_id ?? '',
       avatar: this.user().avatar,
+      password: '',
     });
+
+    console.log(this.userForm.value);
   }
 
   rolerResource = rxResource({
@@ -50,14 +58,68 @@ export class UserDetailComponent {
     const isValid = this.userForm.valid;
     this.userForm.markAllAsTouched();
 
-    if (!isValid) return
+    if (!isValid) return;
 
     const formValue = this.userForm.value;
 
-    if (this.user().id = 'new') {
+    if (this.user().id === 'new') {
+      this.UserService.created(formValue).subscribe((resp) => {
+        if (this.avatarFile) {
+          this.UserService.uploadAvatar(
+            resp.data.id,
+            this.avatarFile,
+          ).subscribe(() => {
+            Swal.fire({
+              position: 'center',
+              icon: 'success',
+              title: 'User created',
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          });
+        }
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: 'User created',
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        this.router.navigate(['/dashboard/users', resp.data.id]);
+      });
+    } else {
+      this.UserService.updated(this.user().id, formValue).subscribe((resp) => {
+        if (this.avatarFile) {
+          this.UserService.uploadAvatar(
+            this.user().id,
+            this.avatarFile,
+          ).subscribe(() => {
+            Swal.fire({
+              position: 'center',
+              icon: 'success',
+              title: 'User Updated',
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          });
+        }
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: 'User Updated',
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      });
+    }
+  }
 
-    }else{
-      
+  onFilesChange(event: Event) {
+    const file = (event.target as HTMLInputElement).files;
+    if (file && file.length > 0) {
+      this.previewIMG = true;
+      this.previewURL = URL.createObjectURL(file[0]);
+      this.avatarFile = file[0];
     }
   }
 }

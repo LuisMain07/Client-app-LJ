@@ -17,8 +17,8 @@ export class DashboardLayoutComponent {
 
   logout() {
     Swal.fire({
-  title: "Estas seguro?",
-  text: "",
+  title: "Seguro?",
+  text: "Cerrar sesion",
   icon: "warning",
   showCancelButton: true,
   confirmButtonColor: "#3085d6",
@@ -30,7 +30,7 @@ export class DashboardLayoutComponent {
         this.router.navigateByUrl('/');
     Swal.fire({
       title: "Adios!",
-      text: "Vuelve pronto",
+      text: "Hasta luego",
       icon: "info"
     });
   }

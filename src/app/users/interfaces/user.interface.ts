@@ -26,7 +26,9 @@ export interface User {
     avatar:     string;
     createdAt:  Date;
     updatedAt:  Date;
-    Role:       Role;
+    Role?:       Role;
+    role_id?:   string;
+    auth?: boolean;
 }
 
 export interface Role {
